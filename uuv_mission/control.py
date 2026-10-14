@@ -5,7 +5,7 @@ class PDController:
         self.K_P = K_P  # Proportional gain
         self.K_D = K_D  # Derivative gain
         self.previous_error = 0.0 # Initialize the previous error to zero
-        
+
     def control(self, reference_t: float, observation_t: float) -> float:
         """Uses reference and observed depths at time t, updates stored error, then returns control action."""
         error = reference_t - observation_t  # Calculate the error 
@@ -13,3 +13,7 @@ class PDController:
         self.previous_error = error  # Update the previous error for the next iteration
         control_signal = self.K_P * error + self.K_D * derivative
         return control_signal
+
+    def reset_state(self):
+        """Reset the previous error to zero, should be called before each new simulation"""
+        self.previous_error = 0.0  # Reset the previous error to zero
