@@ -97,12 +97,14 @@ class ClosedLoop:
         positions = np.zeros((T, 2))
         actions = np.zeros(T)
         self.plant.reset_state()
+        self.controller.reset_state()   # reset controller (error) state before simulation
 
         for t in range(T):
             positions[t] = self.plant.get_position()
-            observation_t = self.plant.get_depth()
-            # Call your controller here
-            self.plant.transition(actions[t], disturbances[t])
+            observation_t = self.plant.get_depth()  
+            reference_t = mission.reference[t]  # find reference depth at time t
+            actions[t] = self.controller.control(reference_t, observation_t)    # record control action based on observed and reference signal
+            self.plant.transition(actions[t], disturbances[t])  # update submarine state based on control action and disturbance
 
         return Trajectory(positions)
         
